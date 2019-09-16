@@ -1,0 +1,8 @@
+Jonas Ege Carlsen
+
+1-3. My understand of the theory surrounding grammars isn't strong enough to give proper answers to these questions.
+
+4. 
+	Float-Int errors happen because they er two different types, and they can therefore not be added together without converting one or the other.
+	This can be a huge help if you're trying to make sure that your code behaves nicely as expected, without the added inconvenience of bugs and other
+	unexpected behavior. 
