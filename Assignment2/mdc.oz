@@ -185,6 +185,11 @@ define
                 ExpressionStack
             [] number(Number)|Tokens then    %If number, add to front of stack. Call itself. 
                 {InfixInternal Tokens Number|ExpressionStack}
+            [] command(Command)|Tokens then
+                Head|Tail = ExpressionStack in
+                {InfixInternal Tokens "("}
+
+
             [] operator(type:Operator)|Tokens then    
             /*
             If operator, create a VirtualString with the following order: "("NextToTop (space) Operator (space) Top")".
