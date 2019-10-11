@@ -42,12 +42,12 @@ define
   The first three digits are: 100
 
   The biggest benefit threading brings is that many statements can essentially run at the same time.
-  In this task, this means that the Product function can operate on the odd integer list before all the elements 
+  In this task, this means that the Product function can operate on the odd integer stream before all the elements 
   have been calculated.
   */
   fun {GenerateOddProduct S E}
     local GO PGO in
-      thread GO = {GenerateOdd S E} end
+      thread GO = {GenerateOddLazy S E} end
       thread PGO = {Product GO} end
       PGO
     end
@@ -58,18 +58,21 @@ define
   TASK 4
 
   This is the rewritten GenerateOdd-function. 
-  In terms of code efficiency, rewriting this function to be lazy eliminates an if check for each call.
 
-  By using lazy functions throughput is strongly reduced. As for when it comes to resource usage, the lazy function will only 
+  By using lazy functions throughput is strongly reduced. Whenever Product requests a number from the stream of odd integers
+  the GenerateOddLazy function would have to calculate a new number, whereas using an eager function would result result in 
+  GenerateOdd getting "ahead" of the Product function, so that one wouldn't have to wait for an odd integer to be calculated. 
+
+  As for when it comes to resource usage, the lazy function will only 
   generate the requested values, and nothing more. If one were to generate all the odd numbers between
   0 and 1000 using a regular function and then realize that 1000 was supposed to be 1100, a regular function
   would have to perform the list creation from scratch. A lazy function, on the other hand, is always ready to 
   continue from the last calculation performed. 
   */
   fun lazy {GenerateOddLazy S E}
-    if S mod 2 == 0 then {GenerateOddLazy S+1}
+    if S mod 2 == 0 then {GenerateOddLazy S+1 E}
     elseif S > E then nil
-    else S|{GenerateOddLazy S+2}
+    else S|{GenerateOddLazy S+2 E}
     end
   end
 
@@ -80,8 +83,8 @@ define
   fun lazy {HammerFactory}
     thread
       {Delay 1000}
-      local X = {RandomInt 1 11} in
-        if X > 9 then
+      local X = {RandomInt 0 10} in
+        if X == 0 then
           'defect'|{HammerFactory}
         else 'working'|{HammerFactory}
         end
@@ -151,8 +154,8 @@ define
   {System.showInfo "\n======="}
   {System.showInfo "TASK 4"}
   {System.showInfo "======="}
-  {System.showInfo "Input: {GenerateOddLazy 0}"}
-  {System.show {GenerateOddLazy 0}}
+  {System.showInfo "Input: {GenerateOddLazy 0 1000}"}
+  {System.show {GenerateOddLazy 0 1000}}
 
   {System.showInfo "\n======="}
   {System.showInfo "TASK 5A"}
